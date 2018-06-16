@@ -20,6 +20,7 @@ Flags:
 	Replaces all instances of four spaces with a tab.
 
 Future plans:
+
 	- Add option to specify how many spaces a tab equals
 	- Improve Error handling
 	- Add documentation to set up command line alias
