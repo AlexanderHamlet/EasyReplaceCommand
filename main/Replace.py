@@ -1,5 +1,6 @@
 import sys
-import os.path as path
+import os.path
+import argparse
 
 class Manipulator:
     file_name = ''
@@ -27,67 +28,57 @@ class Manipulator:
     def replaceText(self, ogString, neoString):
         self.file_text = self.file_text.replace(ogString, neoString)
 
+def createSpaceSize(length):
+    spaces = ""
+    for i in range(length):
+        spaces += " "
+    return spaces
+
+def process(file, ogString, neoString):
+    rep = Manipulator(file)
+    rep.setupFile()
+    rep.readFile()
+    rep.replaceText(ogString, neoString)
+    rep.writeFile()
+    rep.closeFile()
+
+# ====== TO DO ======
+# - Make replacee and replacer arguments optional if -t or -s flags are used
+# - Add options for certain conditions
+#      - Variables only
+#      - Strings only
+#      - etc
+# - Add option to only replace on/between certain lines
+
 def main():
+    parser = argparse.ArgumentParser(description="Simple program that replaces a specified instance x with a specified instance y. Note: If ether flag -t or -s is used then instance arguments are not required.")
+    parser.add_argument("file", help="Target file for string replacement.")
+    tabOption = parser.add_mutually_exclusive_group()
+    tabOption.add_argument("-s", "--tabsToSpaces",
+        help="Converts tabs to spaces. Default: 4 spaces equal 1 tab.",
+        action="store_true")
+    tabOption.add_argument("-t", "--spacesToTabs",
+        help="Converts spaces to tabs. Default: 1 tab equals 4 spaces.",
+        action="store_true")
+    parser.add_argument("-l", "--tabLength",
+        help="Specify the length of a tab. Default: 1 tab equals 4 spaces.",
+        type=int,
+        default=4)
+    parser.add_argument("replacee",
+        help="The instance to be replaced.")
+    parser.add_argument("replacer",
+        help="The instance replacing the old instance.")
 
-    def isFlag(arg):
-        if arg[0] == '-':
-            return True
+    args = parser.parse_args()
+    if os.path.isfile(args.file):
+        if args.tabsToSpaces:
+            process(args.file, "	", createSpaceSize(args.tabLength))
+        elif args.spacesToTabs:
+        	process(args.file, createSpaceSize(args.tabLength), "	")
         else:
-            return False
-
-    def legitFlags(arg, validArgs):
-        if arg in validArgs:
-            return True
-        else:
-            return False
-
-    args = sys.argv
-    argLen = len(args)
-    validFlags = ["-ts", "-st"]
-    errorInvalidFile = "ERROR: Expected valid file location as argument."
-    passedErrorCheck = True
-
-    if argLen < 2:
-        print(errorInvalidFile)
-        passedErrorCheck = False
-    elif isFlag(args[1]):
-        if legitFlags(args[1], validFlags):
-            if argLen > 2 and path.isfile(args[2]):
-                if args[1] == '-ts':
-                    file = args[2]
-                    ogString = "    "
-                    neoString = "    "
-                elif args[1] == '-st':
-                    file = args[2]
-                    ogString = "    "
-                    neoString = "    "
-            else:
-                print(errorInvalidFile)
-                passedErrorCheck = False
-        else:
-            print("ERROR: " + args[1] + " is not a valid flag.")
-            passedErrorCheck = False
-    elif path.isfile(args[1]):
-        file = args[1]
-        if(argLen < 3):
-            print("ERROR: Expected a string to be replaced as argument.")
-            passedErrorCheck = False
-        elif(argLen < 4):
-            print("ERROR: Expected a string to replace the old with as argument.")
-            passedErrorCheck = False
-        ogString = args[2]
-        neoString = args[3]
+        	process(args.file, args.replacee, args.replacer)
     else:
-        print(errorInvalidFile)
-        passedErrorCheck = False
-
-    if(passedErrorCheck):
-        rep = Manipulator(file)
-        rep.setupFile()
-        rep.readFile()
-        rep.replaceText(ogString, neoString)
-        rep.writeFile()
-        rep.closeFile()
+        print("Invalid file argument. It either doesn't exist or is a directory.")
 
 if __name__ == '__main__':
     main()
