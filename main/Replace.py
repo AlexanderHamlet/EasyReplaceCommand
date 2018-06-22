@@ -43,7 +43,6 @@ def process(file, ogString, neoString):
     rep.closeFile()
 
 # ====== TO DO ======
-# - Make replacee and replacer arguments optional if -t or -s flags are used
 # - Add options for certain conditions
 #      - Variables only
 #      - Strings only
@@ -65,20 +64,35 @@ def main():
         type=int,
         default=4)
     parser.add_argument("replacee",
-        help="The instance to be replaced.")
+        help="The instance to be replaced.",
+        nargs="?",
+        default="")
     parser.add_argument("replacer",
-        help="The instance replacing the old instance.")
+        help="The instance replacing the old instance.",
+        nargs="?",
+        default="")
 
     args = parser.parse_args()
     if os.path.isfile(args.file):
+        flagCheck = False
+
         if args.tabsToSpaces:
-            process(args.file, "	", createSpaceSize(args.tabLength))
+            process(args.file, "    ", createSpaceSize(args.tabLength))
+            flagCheck = True
         elif args.spacesToTabs:
-        	process(args.file, createSpaceSize(args.tabLength), "	")
-        else:
-        	process(args.file, args.replacee, args.replacer)
+            process(args.file, createSpaceSize(args.tabLength), "   ")
+            flagCheck = True
+
+        if args.replacee and not args.replacer:
+            print("Error: Given target to replace without a replacement.")
+        elif not args.replacee and args.replacer:
+            print("Error: Given replacement but no target to replace.")
+        elif args.replacee and args.replacer:
+            process(args.file, args.replacee, args.replacer)
+        elif not flagCheck:
+            print("Error: Expected a target to replace.")
     else:
-        print("Invalid file argument. It either doesn't exist or is a directory.")
+        print("ERROR: Invalid file argument.")
 
 if __name__ == '__main__':
     main()

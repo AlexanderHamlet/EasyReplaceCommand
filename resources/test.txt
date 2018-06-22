@@ -1,5 +1,5 @@
 def hello():
-        x = "testing"
-        x = 99
+        y = testing
+        y = 99
 
 hello()

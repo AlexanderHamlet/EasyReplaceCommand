@@ -1,5 +1,5 @@
 # EasyReplaceCommand
-This is a simple python script used to replace one string with another string in a given file.
+This is a simple python script used to replace a specified instance with another specified instance in a given file.
 
 ## === WORK IN PROGRESS, USE AT YOUR OWN RISK ===
 
@@ -11,16 +11,20 @@ Example:
 
 Flags:
 
-	-ts
+	-s
 
 	Replaces all tabs in a file with four spaces.
 
-	-st
+	-t
 
 	Replaces all instances of four spaces with a tab.
 
+	-l
+
+	Specifies number of spaces a tab is equivalent to.
+
 Future plans:
 
-	- Add option to specify how many spaces a tab equals
 	- Improve Error handling
 	- Add documentation to set up command line alias
+	- Improve efficiency
